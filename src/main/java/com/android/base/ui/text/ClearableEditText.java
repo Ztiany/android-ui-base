@@ -141,7 +141,7 @@ public class ClearableEditText extends AppCompatEditText {
 
     private void doDraw(Canvas canvas) {
         canvas.save();
-        canvas.translate(getMeasuredWidth() - mInitPaddingRight, 0);
+        canvas.translate(getMeasuredWidth() - mInitPaddingRight + getScrollX(), 0);
 
         if (mPasswordVisibleEnable) {
             Bitmap passwordBitmap = getPasswordBitmap();
