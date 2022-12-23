@@ -158,9 +158,15 @@ public class BannerViewPager extends FrameLayout {
 
                     @Override
                     public void onPageSelected(int position) {
-                        mOnBannerPositionChangedListener.onPagePositionChanged(position);
+                        if (mOnBannerPositionChangedListener != null) {
+                            mOnBannerPositionChangedListener.onPagePositionChanged(position);
+                        }
                     }
                 });
+    }
+
+    public int getCurrentPosition() {
+        return mViewPager.getCurrentItem();
     }
 
     private void setLooperListener() {
