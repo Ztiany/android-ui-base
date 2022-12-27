@@ -18,7 +18,7 @@ public class NoInsetsCoordinatorLayout extends CoordinatorLayout {
         try {
             Field mApplyWindowInsetsListener = CoordinatorLayout.class.getDeclaredField("mApplyWindowInsetsListener");
             mApplyWindowInsetsListener.setAccessible(true);
-            mApplyWindowInsetsListener.set(this, (OnApplyWindowInsetsListener) (view, windowInsetsCompat) -> null);
+            mApplyWindowInsetsListener.set(this, (androidx.core.view.OnApplyWindowInsetsListener) (v, insets) -> null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
