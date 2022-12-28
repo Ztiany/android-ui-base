@@ -20,6 +20,13 @@ class MarginDecoration : ItemDecoration {
         this.left = left
     }
 
+    constructor(vertical: Int = 0, horizontal: Int = 0) {
+        this.top = vertical
+        this.bottom = vertical
+        this.right = horizontal
+        this.left = horizontal
+    }
+
     constructor(margin: Int) : this(margin, margin, margin, margin)
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: State) {

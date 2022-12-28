@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.widget.TextView
 import com.google.android.material.textfield.TextInputEditText
 
-/** Replacing [TextInputEditText] to fix bug on ColorOS(MeiZu), refer [魅族设备 TextInputLayout 崩溃](https://github.com/android-in-china/Compatibility/issues/11)*/
+/** Replacing [TextInputEditText] to fix bug on ColorOS(MeiZu), refer to [魅族设备 TextInputLayout 崩溃](https://github.com/android-in-china/Compatibility/issues/11) for details. */
 class FixedTextInputEditText(context: Context, attrs: AttributeSet?) : TextInputEditText(context, attrs) {
 
     override fun getHint(): CharSequence? {

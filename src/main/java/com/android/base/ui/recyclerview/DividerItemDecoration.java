@@ -14,7 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * 可以指定 SkipDrawStartCount 和 SkipDrawEndCount
+ * 拷贝自 {@link androidx.recyclerview.widget.DividerItemDecoration}，修改部分代码，支持指定 SkipDrawStartCount 和 SkipDrawEndCount。
  */
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 

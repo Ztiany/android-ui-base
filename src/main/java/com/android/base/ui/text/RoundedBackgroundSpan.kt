@@ -8,7 +8,12 @@ import android.text.style.ReplacementSpan
 /**
  * 圆角背景 Span。
  */
-class RoundedBackgroundSpan(private val backgroundColor: Int, private val textColor: Int, private val padding: Int, private val corner: Int) : ReplacementSpan() {
+class RoundedBackgroundSpan(
+    private val backgroundColor: Int,
+    private val textColor: Int,
+    private val padding: Int,
+    private val corner: Int
+) : ReplacementSpan() {
 
     override fun getSize(paint: Paint, text: CharSequence, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
         return (padding.toFloat() + paint.measureText(text.subSequence(start, end).toString()) + padding.toFloat()).toInt()

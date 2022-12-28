@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * a SimpleLayout look like FrameLayout
+ * a SimpleLayout look like FrameLayout.
  */
 public class SimpleLayout extends ViewGroup {
 

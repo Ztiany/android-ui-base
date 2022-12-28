@@ -1,15 +1,17 @@
 package com.android.base.ui.recyclerview;
 
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import timber.log.Timber;
+
 /**
- * RecyclerView 多布局通用滑动底部监听器
+ * RecyclerView 多布局通用滑动底部监听器。
  */
-@SuppressWarnings("all")
 public abstract class OnRecyclerViewScrollBottomListener extends RecyclerView.OnScrollListener {
 
     /**
@@ -27,9 +29,12 @@ public abstract class OnRecyclerViewScrollBottomListener extends RecyclerView.On
     private int[] mLastPositions;
 
     @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if (layoutManager == null) {
+            return;
+        }
 
         if (mLayoutManagerType == 0) {
             if (layoutManager instanceof GridLayoutManager) {
@@ -40,6 +45,7 @@ public abstract class OnRecyclerViewScrollBottomListener extends RecyclerView.On
                 mLayoutManagerType = STAGGERED_GRID;
             } else {
                 //do nothing
+                Timber.w("The layoutManager is not supported: %s", layoutManager.toString());
             }
         }
 
@@ -86,7 +92,7 @@ public abstract class OnRecyclerViewScrollBottomListener extends RecyclerView.On
     }
 
     @Override
-    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
         super.onScrollStateChanged(recyclerView, newState);
     }
 

@@ -16,8 +16,7 @@ import com.android.base.ui.R;
 
 /**
  * usage:
- * <pre>
- *     {@code
+ * <pre>{@code
  *     <com.android.base.widget.pulltozoom.PullToZoomScrollView
  *         android:id="@+id/me_sv_content"
  *         android:layout_width="match_parent"
@@ -56,8 +55,7 @@ import com.android.base.ui.R;
  *          </LinearLayout>
  *
  *         </com.android.base.widget.pulltozoom.PullToZoomScrollView>
- *     }
- * </pre>
+ *     }</pre>
  */
 public class PullToZoomScrollView extends NestedScrollView {
 
@@ -132,20 +130,23 @@ public class PullToZoomScrollView extends NestedScrollView {
     }
 
     @Override
-    protected boolean overScrollByCompat(int deltaX, int deltaY,
-                                         int scrollX, int scrollY,
-                                         int scrollRangeX, int scrollRangeY,
-                                         int maxOverScrollX,
-                                         int maxOverScrollY, boolean isTouchEvent) {
-        //overScrollBy如果返回True，那么ScrollView将不会滑动
+    protected boolean overScrollByCompat(
+            int deltaX, int deltaY,
+            int scrollX, int scrollY,
+            int scrollRangeX, int scrollRangeY,
+            int maxOverScrollX,
+            int maxOverScrollY, boolean isTouchEvent
+    ) {
+        //overScrollBy 如果返回 True，那么 ScrollView 将不会滑动
         return processOverScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent)
                 || super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent);
     }
 
-    @SuppressWarnings("unused")
-    private boolean processOverScrollBy(int deltaX, int deltaY, int scrollX,
-                                        int scrollY, int scrollRangeX, int scrollRangeY,
-                                        int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
+    private boolean processOverScrollBy(
+            int deltaX, int deltaY, int scrollX,
+            int scrollY, int scrollRangeX, int scrollRangeY,
+            int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent
+    ) {
         if (!innerViewInitialized()) {
             return false;
         }

@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
-import androidx.annotation.IntDef
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.use
 import com.android.base.ui.R
@@ -203,15 +202,4 @@ class TriangleView @JvmOverloads constructor(
 
     private fun needDrawSolid() = triangleSolidColor != Color.TRANSPARENT
 
-}
-
-@IntDef(TriangleDirection.TOP, TriangleDirection.BOTTOM, TriangleDirection.LEFT, TriangleDirection.RIGHT)
-@Retention(AnnotationRetention.SOURCE)
-annotation class TriangleDirection {
-    companion object {
-        const val TOP = 1
-        const val BOTTOM = 2
-        const val LEFT = 3
-        const val RIGHT = 4
-    }
 }

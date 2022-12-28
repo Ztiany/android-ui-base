@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * RecyclerView 滑动时隐藏 Toolbar
+ * RecyclerView 滑动时隐藏 Toolbar。
  */
 public abstract class HidingScrollListener extends RecyclerView.OnScrollListener {
 
@@ -16,8 +16,12 @@ public abstract class HidingScrollListener extends RecyclerView.OnScrollListener
 
     @Override
     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-        super.onScrolled(recyclerView, dx, dy);
-        int firstVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if (layoutManager == null) {
+            return;
+        }
+
+        int firstVisibleItem = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
         //show views if first item is first visible position and views are hidden
         if (firstVisibleItem == 0) {
             if (!controlsVisible) {
