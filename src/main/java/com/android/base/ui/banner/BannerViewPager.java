@@ -7,16 +7,15 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.viewpager.widget.ViewPager;
 
 import com.android.base.ui.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * 支持无限轮播的 ViewPager
+ * 支持无限轮播的 ViewPager。
  *
  * @author Ztiany
  */

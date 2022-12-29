@@ -4,18 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
-import com.google.android.material.appbar.MaterialToolbar
 
 /**
- * This Toolbar doesn't consume touch events.
+ * This MaterialToolbar doesn't consume touch events.
  *
  *@author Ztiany
  */
-class Toolbar @JvmOverloads constructor(
+class MaterialToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = com.google.android.material.R.style.Widget_MaterialComponents_Toolbar
-) : MaterialToolbar(context, attrs, defStyleAttr) {
+) : com.google.android.material.appbar.MaterialToolbar(context, attrs, defStyleAttr) {
 
     var noHandleTouchEvent = true
 
