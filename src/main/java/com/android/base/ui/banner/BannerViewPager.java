@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -13,6 +14,8 @@ import com.android.base.ui.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * 支持无限轮播的 ViewPager。
@@ -24,6 +27,7 @@ public class BannerViewPager extends FrameLayout {
     private final ViewPager mViewPager;
 
     private IPagerNumberView mPageNumberView;
+    private final int mPagerNumberViewId;
 
     private final List<Uri> mImageUrlList = new ArrayList<>();
 
@@ -33,7 +37,9 @@ public class BannerViewPager extends FrameLayout {
 
     private OnPageClickListener mOnPageClickListener;
 
-    private boolean mEnableLopper = false;
+    private boolean mEnableLopper;
+    private final boolean mEnableAutoScroll;
+    private final int mAutoScrollInterval;
 
     public BannerViewPager(Context context) {
         this(context, null);
@@ -48,21 +54,28 @@ public class BannerViewPager extends FrameLayout {
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerViewPager);
 
-        /*用于支持5.0的transition动画*/
+        /*用于支持 5.0 的 transition 动画*/
         mTransitionName = typedArray.getString(R.styleable.BannerViewPager_zvp_item_transition_name);
-        int pageId = typedArray.getResourceId(R.styleable.BannerViewPager_zvp_pager_number_id, -1);
+        mPagerNumberViewId = typedArray.getResourceId(R.styleable.BannerViewPager_zvp_pager_number_id, -1);
+        mEnableLopper = typedArray.getBoolean(R.styleable.BannerViewPager_zvp_enable_looper, false);
+        mAutoScrollInterval = typedArray.getInt(R.styleable.BannerViewPager_zvp_auto_scroll_interval, 3000);
+        mEnableAutoScroll = typedArray.getBoolean(R.styleable.BannerViewPager_zvp_enable_auto_scroll, false) && mAutoScrollInterval > 0;
 
         typedArray.recycle();
 
         inflate(context, R.layout.base_ui_widget_banner_view, this);
 
         mViewPager = getRootView().findViewById(R.id.base_widget_banner_vp);
+    }
 
-        if (pageId != -1) {
-            View pageNumber = findViewById(pageId);
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        if (mPagerNumberViewId != -1) {
+            View pageNumber = findViewById(mPagerNumberViewId);
             if (pageNumber instanceof IPagerNumberView) {
                 mPageNumberView = (IPagerNumberView) pageNumber;
-                mPageNumberView.setViewPager(this);
+                mPageNumberView.setBannerView(this);
             }
         }
     }
@@ -71,8 +84,21 @@ public class BannerViewPager extends FrameLayout {
         mOnBannerPositionChangedListener = onBannerPositionChangedListener;
     }
 
+    /**
+     * 在 {@link #setImages(List, BannerViewPagerAdapter)} 之前调用。
+     */
     public void setPageNumberView(IPagerNumberView pageNumberView) {
         mPageNumberView = pageNumberView;
+        if (mPageNumberView != null) {
+            mPageNumberView.setBannerView(this);
+        }
+    }
+
+    /**
+     * 在 {@link #setImages(List, BannerViewPagerAdapter)} 之前调用。
+     */
+    public void setEnableLooper(boolean enableLooper) {
+        mEnableLopper = enableLooper;
     }
 
     public void setImages(List<Uri> entities, BannerViewPagerAdapter adapter) {
@@ -89,28 +115,25 @@ public class BannerViewPager extends FrameLayout {
         if (entities.size() > 1 && mEnableLopper) {
             addExtraPage(entities);
             showBanner(adapter);
-            setLooperListener();
         } else {
             mImageUrlList.addAll(entities);
             showBanner(adapter);
-            setNormalListener();
         }
+        setViewPagerListener();
+
+        notifyPageSelected(mViewPager.getCurrentItem());
+        notifyOnBannerPositionChanged(mViewPager.getCurrentItem());
+
+        setUpAutoScrollIfNeeded();
     }
 
-    private void setPageSize(int pageSize) {
-        if (mPageNumberView != null) {
-            mPageNumberView.setPageSize(pageSize);
-        }
+    public boolean isEnableLopper() {
+        return mEnableLopper && mImageUrlList.size() > 1;
     }
 
-    private void setPageScrolled(int position, float positionOffset) {
-        if (mPageNumberView != null) {
-            mPageNumberView.setPageScrolled(position, positionOffset);
-        }
-    }
-
-    public void setEnableLooper(boolean enableLooper) {
-        mEnableLopper = enableLooper;
+    public int getFixedCurrentPosition() {
+        int currentItem = mViewPager.getCurrentItem();
+        return getFixedPosition(currentItem);
     }
 
     public void setCurrentPosition(int position) {
@@ -120,9 +143,6 @@ public class BannerViewPager extends FrameLayout {
 
         if (!mEnableLopper) {
             mViewPager.setCurrentItem(position);
-            if (mOnBannerPositionChangedListener != null) {
-                mOnBannerPositionChangedListener.onPagePositionChanged(position);
-            }
             return;
         }
 
@@ -131,64 +151,38 @@ public class BannerViewPager extends FrameLayout {
             if (position >= realSize) {
                 position = realSize - 1;
             }
-            if (mOnBannerPositionChangedListener != null) {
-                mOnBannerPositionChangedListener.onPagePositionChanged(position);
-            }
             position++;
-        } else {
-            if (mOnBannerPositionChangedListener != null) {
-                mOnBannerPositionChangedListener.onPagePositionChanged(0);
-            }
         }
 
         mViewPager.setCurrentItem(position);
     }
 
-    private void setNormalListener() {
+    private void setViewPagerListener() {
         mViewPager.clearOnPageChangeListeners();
+        if (isEnableLopper()) {
+            mViewPager.setCurrentItem(1, false);
+        }
         mViewPager.addOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                        if (positionOffsetPixels == 0.0) {
-                            setPageScrolled(position, positionOffset);
-                        }
-                    }
-
-                    @Override
-                    public void onPageSelected(int position) {
-                        if (mOnBannerPositionChangedListener != null) {
-                            mOnBannerPositionChangedListener.onPagePositionChanged(position);
-                        }
-                    }
-                });
-    }
-
-    public int getCurrentPosition() {
-        return mViewPager.getCurrentItem();
-    }
-
-    private void setLooperListener() {
-        mViewPager.setCurrentItem(1, false);
-        mViewPager.clearOnPageChangeListeners();
-
-        mViewPager.addOnPageChangeListener(
-                new ViewPager.SimpleOnPageChangeListener() {
-
-                    @Override
-                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                        if (positionOffsetPixels == 0.0) {
-                            setPageScrolled(position, positionOffset);
-                        }
+                        notifyPageScrolled(position, positionOffset);
                     }
 
                     @Override
                     public void onPageScrollStateChanged(int state) {
-                        super.onPageScrollStateChanged(state);
-                        //(positionOffset为0的时候，并不一定是切换完成，所以动画还在执行，强制再次切换，就会闪屏)
+                        if (!isEnableLopper()) {
+                            return;
+                        }
+                        //positionOffset 为 0 的时候，并不一定是切换完成，所以动画还在执行，强制再次切换，就会闪屏
                         switch (state) {
                             case ViewPager.SCROLL_STATE_IDLE:// 空闲状态，没有任何滚动正在进行（表明完成滚动）
-                                setViewPagerItemPosition(mViewPager.getCurrentItem());
+                                int position = mViewPager.getCurrentItem();
+                                if (position == mImageUrlList.size() - 1) {
+                                    mViewPager.setCurrentItem(1, false);
+                                } else if (position == 0) {
+                                    mViewPager.setCurrentItem(mImageUrlList.size() - 2, false);
+                                }
                                 break;
                             case ViewPager.SCROLL_STATE_DRAGGING:// 正在拖动page状态
                                 break;
@@ -199,21 +193,12 @@ public class BannerViewPager extends FrameLayout {
 
                     @Override
                     public void onPageSelected(int position) {
-                        if (mOnBannerPositionChangedListener != null) {
-                            if (mImageUrlList.size() > 1) {
-                                if (position == 0) {
-                                    position = mImageUrlList.size() - 3;
-                                } else if (position == mImageUrlList.size() - 1) {
-                                    position = 0;
-                                } else {
-                                    position--;
-                                }
-                            }
-                            mOnBannerPositionChangedListener.onPagePositionChanged(position);
-                        }
+                        notifyPageSelected(position);
+                        notifyOnBannerPositionChanged(position);
                     }
                 });
     }
+
 
     private void addExtraPage(List<Uri> entities) {
         mImageUrlList.add(entities.get(entities.size() - 1));
@@ -224,7 +209,7 @@ public class BannerViewPager extends FrameLayout {
     private void showBanner(BannerViewPagerAdapter adapter) {
         adapter.setContext(getContext());
         adapter.setTransitionName(mTransitionName);
-        adapter.setEntities(mImageUrlList, mEnableLopper);
+        adapter.setEntities(mImageUrlList, isEnableLopper());
         adapter.setOnBannerClickListener(mOnPageClickListener);
         mViewPager.setAdapter(adapter);
     }
@@ -233,16 +218,110 @@ public class BannerViewPager extends FrameLayout {
         mOnPageClickListener = onPageClickListener;
     }
 
-    private void setViewPagerItemPosition(int position) {
-        if (position == mImageUrlList.size() - 1) {
-            mViewPager.setCurrentItem(1, false);
-        } else if (position == 0) {
-            mViewPager.setCurrentItem(mImageUrlList.size() - 2, false);
+    public interface OnBannerPositionChangedListener {
+        void onPagePositionChanged(int position);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // OnBannerPositionChangedListener
+    ///////////////////////////////////////////////////////////////////////////
+    private void notifyOnBannerPositionChanged(int position) {
+        if (mOnBannerPositionChangedListener != null) {
+            mOnBannerPositionChangedListener.onPagePositionChanged(getFixedPosition(position));
         }
     }
 
-    public interface OnBannerPositionChangedListener {
-        void onPagePositionChanged(int position);
+    private int getFixedPosition(int position) {
+        if (isEnableLopper()) {
+            if (position == 0) {
+                position = mImageUrlList.size() - 3;
+            } else if (position == mImageUrlList.size() - 1) {
+                position = 0;
+            } else {
+                position--;
+            }
+        }
+        return position;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // AutoScroll
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        setUpAutoScrollIfNeeded();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        getHandler().removeCallbacks(mAutoScrollTask);
+    }
+
+    private void setUpAutoScrollIfNeeded() {
+        if (!mEnableAutoScroll || mImageUrlList.size() <= 1) {
+            return;
+        }
+        Timber.d("setUpAutoScrollIfNeeded mAutoScrollInterval = %d", mAutoScrollInterval);
+        getHandler().removeCallbacks(mAutoScrollTask);
+        getHandler().postDelayed(mAutoScrollTask, mAutoScrollInterval);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
+            setUpAutoScrollIfNeeded();
+        }
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            getHandler().removeCallbacks(mAutoScrollTask);
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private final Runnable mAutoScrollTask = new Runnable() {
+
+        @Override
+        public void run() {
+            int fixedCurrentPosition = getFixedCurrentPosition();
+            int nextPosition = fixedCurrentPosition + 1;
+            if (isEnableLopper()) {
+                if (nextPosition >= mImageUrlList.size() - 2) {
+                    mViewPager.setCurrentItem(nextPosition + 1);
+                } else {
+                    setCurrentPosition(nextPosition);
+                }
+            } else {
+                if (nextPosition >= mImageUrlList.size()) {
+                    nextPosition = 0;
+                }
+                setCurrentPosition(nextPosition);
+            }
+            getHandler().postDelayed(this, mAutoScrollInterval);
+        }
+
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Pager Number View
+    ///////////////////////////////////////////////////////////////////////////
+    private void notifyPageScrolled(int position, float positionOffset) {
+        if (mPageNumberView != null) {
+            mPageNumberView.onPageScrolled(getFixedPosition(position), positionOffset);
+        }
+    }
+
+    private void setPageSize(int pageSize) {
+        if (mPageNumberView != null) {
+            mPageNumberView.setPageSize(pageSize);
+        }
+    }
+
+    private void notifyPageSelected(int position) {
+        if (mPageNumberView != null) {
+            mPageNumberView.onPageSelected(getFixedPosition(position));
+        }
     }
 
 }

@@ -3,6 +3,10 @@
 
     <declare-styleable name="BannerViewPager">
         <attr name="zvp_pager_number_id" format="reference" />
+        <attr name="zvp_enable_looper" format="boolean" />
+        <attr name="zvp_enable_auto_scroll" format="boolean" />
+        <!-- unit: ms-->
+        <attr name="zvp_auto_scroll_interval" format="integer" />
         <attr name="zvp_item_transition_name" format="string|reference" />
     </declare-styleable>
 

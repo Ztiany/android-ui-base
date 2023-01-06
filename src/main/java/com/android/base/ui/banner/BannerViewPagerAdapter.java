@@ -5,10 +5,10 @@ import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
+
+import java.util.List;
 
 /**
  * @author Ztiany
@@ -40,8 +40,21 @@ public abstract class BannerViewPagerAdapter extends PagerAdapter {
 
     protected final void callPagerClicked(int position, View view) {
         if (mClickListener != null) {
-            mClickListener.onClick(view, mIsLooper ? position - 1 : position);
+            mClickListener.onClick(view, getFixedPosition(position));
         }
+    }
+
+    private int getFixedPosition(int position) {
+        if (mIsLooper) {
+            if (position == 0) {
+                position = mEntities.size() - 3;
+            } else if (position == mEntities.size() - 1) {
+                position = 0;
+            } else {
+                position--;
+            }
+        }
+        return position;
     }
 
     public List<Uri> getEntities() {

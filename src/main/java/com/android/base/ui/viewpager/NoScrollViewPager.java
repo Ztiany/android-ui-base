@@ -1,4 +1,4 @@
-package com.android.base.ui.banner;
+package com.android.base.ui.viewpager;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,8 +11,6 @@ import androidx.viewpager.widget.ViewPager;
 
 /**
  * @author Ztiany
- * Email: ztiany3@gmail.com
- * Date : 2019-01-03 15:38
  */
 public class NoScrollViewPager extends ViewPager {
 

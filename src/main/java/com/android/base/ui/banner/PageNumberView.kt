@@ -25,7 +25,6 @@ class PageNumberView @JvmOverloads constructor(
     private val mTextBaseLine: Int
 
     init {
-
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PageNumberView)
 
         /*是否可以缩放*/
@@ -68,27 +67,22 @@ class PageNumberView @JvmOverloads constructor(
         mCenterX = w / 2
     }
 
-    override fun setPageScrolled(position: Int, positionOffset: Float) {
-        mPosition = position
-        if (mPageSize > 1) {
-            if (mPosition == 0) {
-                mPosition = mPageSize
-            } else if (mPosition == mPageSize + 1) {
-                mPosition = 1
-            }
-        } else {
-            mPosition = mPageSize
-        }
+    override fun onPageScrolled(position: Int, positionOffset: Float) {
+        //no op
+    }
+
+    override fun onPageSelected(position: Int) {
+        mPosition = position + 1
         invalidate()
     }
 
-    override fun setViewPager(viewPager: BannerViewPager) {
+    override fun setBannerView(viewPager: BannerViewPager) {
         //no op
     }
 
     override fun setPageSize(pageSize: Int) {
         mPageSize = pageSize
-        mPosition = pageSize//只有一個的時候
+        mPosition = pageSize
         requestLayout()
     }
 
