@@ -106,6 +106,7 @@ public class BannerViewPager extends FrameLayout {
             mImageUrlList.clear();
             mViewPager.setAdapter(null);
             setPageSize(0);
+            setUpAutoScrollIfNeeded();
             return;
         }
 
@@ -261,11 +262,11 @@ public class BannerViewPager extends FrameLayout {
     }
 
     private void setUpAutoScrollIfNeeded() {
+        getHandler().removeCallbacks(mAutoScrollTask);
         if (!mEnableAutoScroll || mImageUrlList.size() <= 1) {
             return;
         }
         Timber.d("setUpAutoScrollIfNeeded mAutoScrollInterval = %d", mAutoScrollInterval);
-        getHandler().removeCallbacks(mAutoScrollTask);
         getHandler().postDelayed(mAutoScrollTask, mAutoScrollInterval);
     }
 
