@@ -3,7 +3,7 @@ package com.android.base.ui.text
 import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.AttrRes
-import com.android.base.ui.common.TextColorView
+import com.android.base.ui.common.TextColor
 import com.android.base.ui.shape.EnhancedShapeable
 import com.android.base.ui.shape.MaterialShapeDrawableHelper
 import com.android.base.ui.shape.ShapeTextColorHelper
@@ -13,7 +13,7 @@ class ShapeableClearableEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = android.R.attr.editTextStyle
-) : ClearableEditText(context, attrs, defStyleAttr), EnhancedShapeable, TextColorView {
+) : ClearableEditText(context, attrs, defStyleAttr), EnhancedShapeable, TextColor {
 
     private val mdHelper = MaterialShapeDrawableHelper(context, attrs, defStyleAttr)
 
