@@ -29,7 +29,6 @@
         <attr name="msd_backgroundColor_normal" />
 
         <attr name="msd_shadow_color" />
-        <attr name="msd_use_tint_color_for_shadow" />
         <attr name="msd_padding" />
         <attr name="msd_padding_vertical" />
         <attr name="msd_padding_horizontal" />
@@ -60,7 +59,6 @@
         <attr name="msd_backgroundColor_normal" />
 
         <attr name="msd_shadow_color" />
-        <attr name="msd_use_tint_color_for_shadow" />
         <attr name="msd_padding" />
         <attr name="msd_padding_vertical" />
         <attr name="msd_padding_horizontal" />
