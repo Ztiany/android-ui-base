@@ -3,6 +3,7 @@ package com.android.base.ui.banner;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -258,16 +259,16 @@ public class BannerViewPager extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        getHandler().removeCallbacks(mAutoScrollTask);
+        removeCallbacks(mAutoScrollTask);
     }
 
     private void setUpAutoScrollIfNeeded() {
-        getHandler().removeCallbacks(mAutoScrollTask);
+        removeCallbacks(mAutoScrollTask);
         if (!mEnableAutoScroll || mImageUrlList.size() <= 1) {
             return;
         }
         Timber.d("setUpAutoScrollIfNeeded mAutoScrollInterval = %d", mAutoScrollInterval);
-        getHandler().postDelayed(mAutoScrollTask, mAutoScrollInterval);
+        postDelayed(mAutoScrollTask, mAutoScrollInterval);
     }
 
     @Override
@@ -276,7 +277,7 @@ public class BannerViewPager extends FrameLayout {
             setUpAutoScrollIfNeeded();
         }
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            getHandler().removeCallbacks(mAutoScrollTask);
+            removeCallbacks(mAutoScrollTask);
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -299,9 +300,8 @@ public class BannerViewPager extends FrameLayout {
                 }
                 setCurrentPosition(nextPosition);
             }
-            getHandler().postDelayed(this, mAutoScrollInterval);
+            postDelayed(this, mAutoScrollInterval);
         }
-
     };
 
     ///////////////////////////////////////////////////////////////////////////
