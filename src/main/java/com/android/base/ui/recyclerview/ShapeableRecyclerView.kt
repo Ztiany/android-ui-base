@@ -11,7 +11,7 @@ import com.google.android.material.shape.ShapeAppearanceModel
 class ShapeableRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.recyclerViewStyle
+    defStyleAttr: Int = androidx.recyclerview.R.attr.recyclerViewStyle
 ) : RecyclerView(context, attrs, defStyleAttr), EnhancedShapeable {
 
     private val mdHelper = MaterialShapeDrawableHelper(context, attrs, defStyleAttr)
