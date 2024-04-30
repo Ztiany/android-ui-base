@@ -11,13 +11,8 @@ android {
     defaultConfig {
         minSdk AppConfig.minSdkVersion
         targetSdk AppConfig.compileSdkVersion
-        versionCode AppConfig.versionCode
-        versionName AppConfig.versionName
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
@@ -42,6 +37,9 @@ android {
             java.srcDirs += "src/github/java"
             res.srcDirs += "src/github/res"
         }
+    }
+    lint {
+        abortOnError false
     }
 
 }
