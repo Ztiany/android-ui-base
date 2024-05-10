@@ -3,9 +3,9 @@ package com.android.base.ui.recyclerview
 import android.content.Context
 import android.util.AttributeSet
 import androidx.recyclerview.widget.RecyclerView
-import com.android.base.ui.R
 import com.android.base.ui.shape.EnhancedShapeable
 import com.android.base.ui.shape.MaterialShapeDrawableHelper
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 
 class ShapeableRecyclerView @JvmOverloads constructor(
@@ -20,7 +20,7 @@ class ShapeableRecyclerView @JvmOverloads constructor(
         mdHelper.update(this)
     }
 
-    override fun updateShapeDrawable() {
+    override fun recoverShapeDrawable() {
         mdHelper.update(this)
     }
 
@@ -30,6 +30,10 @@ class ShapeableRecyclerView @JvmOverloads constructor(
 
     override fun getShapeAppearanceModel(): ShapeAppearanceModel {
         return mdHelper.obtainShapeAppearanceModel()
+    }
+
+    override fun getShapeDrawable(): MaterialShapeDrawable {
+        return mdHelper.drawable
     }
 
 }
