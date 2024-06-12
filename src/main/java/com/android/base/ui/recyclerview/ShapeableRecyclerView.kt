@@ -17,11 +17,11 @@ class ShapeableRecyclerView @JvmOverloads constructor(
     private val mdHelper = MaterialShapeDrawableHelper(context, attrs, defStyleAttr)
 
     init {
-        mdHelper.update(this)
+        mdHelper.setShapeDrawable(this)
     }
 
     override fun recoverShapeDrawable() {
-        mdHelper.update(this)
+        mdHelper.recoverShapeDrawable(this)
     }
 
     override fun setShapeAppearanceModel(shapeAppearanceModel: ShapeAppearanceModel) {

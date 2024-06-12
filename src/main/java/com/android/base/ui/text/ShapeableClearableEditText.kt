@@ -21,12 +21,12 @@ class ShapeableClearableEditText @JvmOverloads constructor(
     private val colorHelper = ShapeTextColorHelper(context, attrs, defStyleAttr)
 
     init {
-        mdHelper.update(this)
+        mdHelper.setShapeDrawable(this)
         colorHelper.setTextColor(this)
     }
 
     override fun recoverShapeDrawable() {
-        mdHelper.update(this)
+        mdHelper.recoverShapeDrawable(this)
     }
 
     override fun recoverTextColor() {
