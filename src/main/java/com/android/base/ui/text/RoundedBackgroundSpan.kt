@@ -5,9 +5,6 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.text.style.ReplacementSpan
 
-/**
- * 圆角背景 Span。
- */
 class RoundedBackgroundSpan(
     private val backgroundColor: Int,
     private val textColor: Int,

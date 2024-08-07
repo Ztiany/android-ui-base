@@ -53,11 +53,6 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
      */
     private int mBitmapRightEdgeOffset;
 
-    /**
-     * the margin between clearing bitmap and password bitmap
-     */
-    private int mBitmapMargin;
-
     private int mInitPaddingRight;
 
     private static final int DOWN_POSITION_NONE = 1;
@@ -75,7 +70,6 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
         parseAttributes(context, attrs);
         mInitPaddingRight = getPaddingRight();
         mBitmapRightEdgeOffset = Sizes.dpToPx(getContext(), 5);
-        mBitmapMargin = Sizes.dpToPx(getContext(), 15);
         mBitmapPaint = new Paint();
         mBitmapPaint.setAntiAlias(true);
         adjustPadding();
@@ -84,10 +78,7 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
     }
 
     private void parseAttributes(Context context, AttributeSet attrs) {
-        TypedArray typedArray = null;
-        try {
-            typedArray = context.obtainStyledAttributes(attrs, R.styleable.ClearableAutoCompleteTextView);
-
+        try (TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ClearableAutoCompleteTextView)) {
             BitmapDrawable clearDrawable = (BitmapDrawable) typedArray.getDrawable(R.styleable.ClearableAutoCompleteTextView_cet_clear_drawable);
             if (clearDrawable != null) {
                 mClearBitmap = clearDrawable.getBitmap();
@@ -95,13 +86,7 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
             if (mClearBitmap == null) {
                 mClearBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.base_ui_icon_clear);
             }
-
             mContentClearableEnable = typedArray.getBoolean(R.styleable.ClearableAutoCompleteTextView_cet_enable_content_clearable, true);
-
-        } finally {
-            if (typedArray != null) {
-                typedArray.recycle();
-            }
         }
     }
 

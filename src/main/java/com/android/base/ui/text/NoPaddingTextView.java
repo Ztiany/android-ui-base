@@ -57,9 +57,6 @@ public class NoPaddingTextView extends AppCompatTextView {
         return text;
     }
 
-    /**
-     * 绘制文本
-     */
     private void drawText(Canvas canvas) {
         String text = calculateTextParams();
         int left = mBounds.left;

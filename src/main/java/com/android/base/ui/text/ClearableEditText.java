@@ -91,10 +91,7 @@ public class ClearableEditText extends AppCompatEditText {
     }
 
     private void parseAttributes(Context context, AttributeSet attrs) {
-        TypedArray typedArray = null;
-        try {
-            typedArray = context.obtainStyledAttributes(attrs, R.styleable.ClearableEditText);
-
+        try (TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ClearableEditText)) {
             BitmapDrawable clearDrawable = (BitmapDrawable) typedArray.getDrawable(R.styleable.ClearableEditText_cet_clear_drawable);
             if (clearDrawable != null) {
                 mClearBitmap = clearDrawable.getBitmap();
@@ -116,11 +113,6 @@ public class ClearableEditText extends AppCompatEditText {
             mPasswordVisibleEnable = typedArray.getBoolean(R.styleable.ClearableEditText_cet_enable_password_visibility_toggle, false);
             mPasswordVisibleEnable = mPasswordVisibleEnable && isInputTypePassword();
             mContentClearableEnable = typedArray.getBoolean(R.styleable.ClearableEditText_cet_enable_content_clearable, true);
-
-        } finally {
-            if (typedArray != null) {
-                typedArray.recycle();
-            }
         }
     }
 
