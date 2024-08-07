@@ -10,11 +10,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * 拷贝自 {@link androidx.recyclerview.widget.DividerItemDecoration}，修改部分代码，支持指定 SkipDrawStartCount 和 SkipDrawEndCount。
+ * Copy from {@link androidx.recyclerview.widget.DividerItemDecoration}, and add skip start and end item count.
  */
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
@@ -31,8 +30,9 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     private int mOrientation;
 
     private final Rect mBounds = new Rect();
-    private final int mSkipDrawStartCount;
-    private final int mSkipDrawEndCount;
+
+    private final int mSkipStartItemCount;
+    private final int mSkipEndItemCount;
 
     /**
      * Creates a divider {@link RecyclerView.ItemDecoration} that can be used with a
@@ -45,15 +45,15 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         this(context, orientation, 0, 0);
     }
 
-    public DividerItemDecoration(Context context, int orientation, int skipDrawStartCount, int skipDrawEndCount) {
-        final TypedArray a = context.obtainStyledAttributes(ATTRS);
-        mDivider = a.getDrawable(0);
-        a.recycle();
-        if (skipDrawStartCount < 0 || skipDrawEndCount < 0) {
+    public DividerItemDecoration(Context context, int orientation, int skipStartItemCount, int skipEndEndCount) {
+        try (final TypedArray a = context.obtainStyledAttributes(ATTRS)) {
+            mDivider = a.getDrawable(0);
+        }
+        if (skipStartItemCount < 0 || skipEndEndCount < 0) {
             throw new IllegalArgumentException("can not less than 0");
         }
-        mSkipDrawStartCount = skipDrawStartCount;
-        mSkipDrawEndCount = skipDrawEndCount;
+        mSkipStartItemCount = skipStartItemCount;
+        mSkipEndItemCount = skipEndEndCount;
         setOrientation(orientation);
     }
 
@@ -76,11 +76,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
      *
      * @param drawable Drawable that should be used as a divider.
      */
-    @SuppressWarnings("all")
     public void setDrawable(@NonNull Drawable drawable) {
-        if (drawable == null) {
-            throw new IllegalArgumentException("Drawable cannot be null.");
-        }
         mDivider = drawable;
     }
 
@@ -98,6 +94,11 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     @SuppressLint("NewApi")
     private void drawVertical(Canvas canvas, RecyclerView parent) {
+        RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
+        if (layoutManager == null) {
+            return;
+        }
+
         canvas.save();
         final int left;
         final int right;
@@ -112,17 +113,17 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         }
 
         final int childCount = parent.getChildCount();
-        int itemCount = parent.getLayoutManager().getItemCount();
-        int endNotDraw = itemCount - mSkipDrawEndCount;
+        int itemCount = layoutManager.getItemCount();
+        int endNotDraw = itemCount - mSkipEndItemCount;
 
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
             int childAdapterPosition = parent.getChildAdapterPosition(child);
-            if (childAdapterPosition < mSkipDrawStartCount || childAdapterPosition >= endNotDraw) {
+            if (childAdapterPosition < mSkipStartItemCount || childAdapterPosition >= endNotDraw) {
                 continue;
             }
             parent.getDecoratedBoundsWithMargins(child, mBounds);
-            final int bottom = mBounds.bottom + Math.round(ViewCompat.getTranslationY(child));
+            final int bottom = mBounds.bottom + Math.round(child.getTranslationY());
             final int top = bottom - mDivider.getIntrinsicHeight();
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(canvas);
@@ -132,6 +133,11 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     @SuppressLint("NewApi")
     private void drawHorizontal(Canvas canvas, RecyclerView parent) {
+        RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
+        if (layoutManager == null) {
+            return;
+        }
+
         canvas.save();
         final int top;
         final int bottom;
@@ -146,16 +152,16 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         }
 
         final int childCount = parent.getChildCount();
-        int itemCount = parent.getLayoutManager().getItemCount();
-        int endNotDraw = itemCount - mSkipDrawEndCount;
+        int itemCount = layoutManager.getItemCount();
+        int endNotDraw = itemCount - mSkipEndItemCount;
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
             int childAdapterPosition = parent.getChildAdapterPosition(child);
-            if (childAdapterPosition < mSkipDrawStartCount || childAdapterPosition >= endNotDraw) {
+            if (childAdapterPosition < mSkipStartItemCount || childAdapterPosition >= endNotDraw) {
                 continue;
             }
             parent.getLayoutManager().getDecoratedBoundsWithMargins(child, mBounds);
-            final int right = mBounds.right + Math.round(ViewCompat.getTranslationX(child));
+            final int right = mBounds.right + Math.round(child.getTranslationX());
             final int left = right - mDivider.getIntrinsicWidth();
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(canvas);
