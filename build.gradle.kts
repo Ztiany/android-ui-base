@@ -24,19 +24,16 @@ android {
 
 dependencies {
     // androidx
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.annotations)
-    implementation(libs.androidx.viewpager)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.google.ui.material)
-    implementation(libs.androidx.ktx)
-
+    api(libs.androidx.appcompat)
+    api(libs.androidx.annotations)
+    api(libs.androidx.viewpager)
+    api(libs.androidx.recyclerview)
+    api(libs.google.ui.material)
+    api(libs.androidx.ktx)
     // kotlin
-    implementation(libs.kotlin.stdlib)
-
+    api(libs.kotlin.stdlib)
     // third
     api(libs.ztiany.drawableView)
-
     // log
     implementation(libs.jakewharton.timber)
 }
