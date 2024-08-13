@@ -11,8 +11,9 @@
 
         <attr name="shapeAppearance" />
         <attr name="shapeAppearanceOverlay" />
-        <attr name="msd_useShapeAppearance" />
         <attr name="msd_strokeWidth" />
+        <attr name="msd_selected" />
+        <attr name="msd_clip_to_outline" />
 
         <attr name="msd_strokeColor_disabled" />
         <attr name="msd_strokeColor_focused" />
@@ -27,22 +28,13 @@
         <attr name="msd_backgroundColor_selected" />
         <attr name="msd_backgroundColor_pressed" />
         <attr name="msd_backgroundColor_normal" />
-
-        <attr name="msd_shadow_color" />
-        <attr name="msd_padding" />
-        <attr name="msd_padding_vertical" />
-        <attr name="msd_padding_horizontal" />
-        <attr name="msd_padding_left" />
-        <attr name="msd_padding_right" />
-        <attr name="msd_padding_top" />
-        <attr name="msd_padding_bottom" />
     </declare-styleable>
 
     <declare-styleable name="ShapeableRecyclerView">
         <attr name="shapeAppearance" />
         <attr name="shapeAppearanceOverlay" />
-        <attr name="msd_useShapeAppearance" />
         <attr name="msd_strokeWidth" />
+        <attr name="msd_clip_to_outline" />
 
         <attr name="msd_strokeColor_disabled" />
         <attr name="msd_strokeColor_focused" />
@@ -57,15 +49,6 @@
         <attr name="msd_backgroundColor_selected" />
         <attr name="msd_backgroundColor_pressed" />
         <attr name="msd_backgroundColor_normal" />
-
-        <attr name="msd_shadow_color" />
-        <attr name="msd_padding" />
-        <attr name="msd_padding_vertical" />
-        <attr name="msd_padding_horizontal" />
-        <attr name="msd_padding_left" />
-        <attr name="msd_padding_right" />
-        <attr name="msd_padding_top" />
-        <attr name="msd_padding_bottom" />
     </declare-styleable>
 
 </resources>
