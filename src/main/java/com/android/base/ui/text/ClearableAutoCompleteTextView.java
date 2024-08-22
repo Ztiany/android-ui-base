@@ -11,10 +11,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.PasswordTransformationMethod;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,14 +55,12 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
 
     private static final int DOWN_POSITION_NONE = 1;
     private static final int DOWN_POSITION_CLEAR = 2;
-    private static final int DOWN_POSITION_PASSWORD = 3;
+
     private int mDownPosition = DOWN_POSITION_NONE;
 
     private int extendDrawableTouchingSize = 0;
 
-    private PasswordTransformationMethod mVisibleTransformation;
-
-    private ClearableEditText.OnShowPasswordListener mOnShowPasswordListener;
+    private OnClearTextListener mOnClearTextListener;
 
     private void init(Context context, AttributeSet attrs) {
         parseAttributes(context, attrs);
@@ -78,7 +74,10 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
     }
 
     private void parseAttributes(Context context, AttributeSet attrs) {
-        try (TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ClearableAutoCompleteTextView)) {
+        TypedArray typedArray = null;
+        try {
+            typedArray = context.obtainStyledAttributes(attrs, R.styleable.ClearableAutoCompleteTextView);
+
             BitmapDrawable clearDrawable = (BitmapDrawable) typedArray.getDrawable(R.styleable.ClearableAutoCompleteTextView_cet_clear_drawable);
             if (clearDrawable != null) {
                 mClearBitmap = clearDrawable.getBitmap();
@@ -86,7 +85,13 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
             if (mClearBitmap == null) {
                 mClearBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.base_ui_icon_clear);
             }
+
             mContentClearableEnable = typedArray.getBoolean(R.styleable.ClearableAutoCompleteTextView_cet_enable_content_clearable, true);
+
+        } finally {
+            if (typedArray != null) {
+                typedArray.recycle();
+            }
         }
     }
 
@@ -117,17 +122,6 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
         }
 
         canvas.restore();
-    }
-
-    public void setOnShowPasswordListener(ClearableEditText.OnShowPasswordListener onShowPasswordListener) {
-        mOnShowPasswordListener = onShowPasswordListener;
-    }
-
-    private PasswordTransformationMethod getInvisibleTransformation() {
-        if (mVisibleTransformation == null) {
-            mVisibleTransformation = new PasswordTransformationMethod();
-        }
-        return mVisibleTransformation;
     }
 
     private void adjustPadding() {
@@ -172,16 +166,9 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
             if (upPosition == mDownPosition) {
                 if ((upPosition == DOWN_POSITION_CLEAR)) {
                     setText("");
-                } else if (upPosition == DOWN_POSITION_PASSWORD) {
-                    if (isPasswordInvisible()) {
-                        if (mOnShowPasswordListener != null) {
-                            mOnShowPasswordListener.onShowPassword(this);
-                        }
-                        setTransformationMethod(null);
-                    } else {
-                        setTransformationMethod(getInvisibleTransformation());
+                    if (mOnClearTextListener != null) {
+                        mOnClearTextListener.onTextCleared(this);
                     }
-                    setSelection(getTextValue().length());
                 }
             }
         }
@@ -206,19 +193,6 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
         return (text == null) ? "" : text.toString();
     }
 
-    private boolean isInputTypePassword() {
-        int inputType = getInputType();
-        final int variation = inputType & (EditorInfo.TYPE_MASK_CLASS | EditorInfo.TYPE_MASK_VARIATION);
-        final boolean passwordInputType = variation == (EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_PASSWORD);
-        final boolean webPasswordInputType = variation == (EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_WEB_PASSWORD);
-        final boolean numberPasswordInputType = variation == (EditorInfo.TYPE_CLASS_NUMBER | EditorInfo.TYPE_NUMBER_VARIATION_PASSWORD);
-        return passwordInputType || webPasswordInputType || numberPasswordInputType;
-    }
-
-    public boolean isPasswordInvisible() {
-        return getTransformationMethod() instanceof PasswordTransformationMethod;
-    }
-
     public void setInitRightPadding(int initRightPadding) {
         mInitPaddingRight = initRightPadding;
         adjustPadding();
@@ -229,9 +203,8 @@ public class ClearableAutoCompleteTextView extends MaterialAutoCompleteTextView 
         invalidate();
     }
 
-    public void hidePassword() {
-        setTransformationMethod(getInvisibleTransformation());
-        invalidate();
+    public void setOnClearTextListener(OnClearTextListener onClearTextListener) {
+        mOnClearTextListener = onClearTextListener;
     }
 
 }

@@ -8,22 +8,28 @@ import com.android.base.ui.R;
 
 class RatioHelper {
 
-    private static final int[] ratioAttrs = {R.attr.layout_ratio};
     private float mRatio;
+
     private final View mView;
+
+    private final int[] mMeasuredDimension = new int[2];
 
     RatioHelper(View view) {
         mView = view;
     }
 
     void resolveAttr(AttributeSet attrs) {
-        TypedArray typedArray = mView.getContext().obtainStyledAttributes(attrs, ratioAttrs);
-        mRatio = typedArray.getFloat(0, 0F);
-        typedArray.recycle();
+        try (TypedArray typedArray = mView.getContext().obtainStyledAttributes(attrs, R.styleable.RatioLayout)) {
+            mRatio = typedArray.getFloat(0, 0F);
+        }
     }
 
     void setRatio(float ratio) {
+        if (mRatio == ratio) {
+            return;
+        }
         mRatio = ratio;
+        mView.requestLayout();
     }
 
     int[] measure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -36,18 +42,17 @@ class RatioHelper {
             int height = View.MeasureSpec.getSize(heightMeasureSpec) - mView.getPaddingTop() - mView.getPaddingBottom();
 
             if (widthMode == View.MeasureSpec.EXACTLY && heightMode != View.MeasureSpec.EXACTLY) {
-
                 height = (int) (width / mRatio + 0.5f);
                 heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(height + mView.getPaddingTop() + mView.getPaddingBottom(), View.MeasureSpec.EXACTLY);
-
             } else if (widthMode != View.MeasureSpec.EXACTLY && heightMode == View.MeasureSpec.EXACTLY) {
-
                 width = (int) (height * mRatio + 0.5f);
                 widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(width + mView.getPaddingLeft() + mView.getPaddingRight(), View.MeasureSpec.EXACTLY);
-
             }
         }
-        return new int[]{widthMeasureSpec, heightMeasureSpec};
+
+        mMeasuredDimension[0] = widthMeasureSpec;
+        mMeasuredDimension[1] = heightMeasureSpec;
+        return mMeasuredDimension;
     }
 
 }

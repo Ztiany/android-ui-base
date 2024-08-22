@@ -25,7 +25,6 @@ public class RatioImageView extends AppCompatImageView {
 
     public void setRatio(float ratio) {
         mRatioHelper.setRatio(ratio);
-        requestLayout();
     }
 
     @Override

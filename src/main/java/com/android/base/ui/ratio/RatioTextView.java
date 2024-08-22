@@ -25,7 +25,6 @@ public class RatioTextView extends AppCompatTextView {
 
     public void setRatio(float ratio) {
         mRatioHelper.setRatio(ratio);
-        requestLayout();
     }
 
     @Override

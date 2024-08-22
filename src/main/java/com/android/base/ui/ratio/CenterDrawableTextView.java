@@ -9,8 +9,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 
 /**
- * 应用场景，比如：当 TextView 的 width 为 match 时，此时使用的 leftDrawable 是靠左的，且无法通过 Gravity 属性来修改其位置。
- * 该控件用于类似此种情况下需要 Drawable 居中的情况。注意：仅支持单个方向的 Drawable。
+ * Use case: For example: when the width of TextView is match, the leftDrawable is on the left, and its position cannot be modified through the Gravity property.
  *
  * @author Ztiany
  */
