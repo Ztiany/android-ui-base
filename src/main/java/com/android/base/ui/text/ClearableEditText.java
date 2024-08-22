@@ -16,9 +16,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import com.android.base.ui.R;
@@ -57,11 +55,9 @@ public class ClearableEditText extends AppCompatEditText {
 
     private PasswordTransformationMethod mVisibleTransformation;
 
-    public interface OnShowPasswordListener {
-        void onShowPassword(@NonNull EditText editText);
-    }
-
     private OnShowPasswordListener mOnShowPasswordListener;
+
+    private OnClearTextListener mOnClearTextListener;
 
     public ClearableEditText(Context context) {
         super(context);
@@ -91,7 +87,10 @@ public class ClearableEditText extends AppCompatEditText {
     }
 
     private void parseAttributes(Context context, AttributeSet attrs) {
-        try (TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ClearableEditText)) {
+        TypedArray typedArray = null;
+        try {
+            typedArray = context.obtainStyledAttributes(attrs, R.styleable.ClearableEditText);
+
             BitmapDrawable clearDrawable = (BitmapDrawable) typedArray.getDrawable(R.styleable.ClearableEditText_cet_clear_drawable);
             if (clearDrawable != null) {
                 mClearBitmap = clearDrawable.getBitmap();
@@ -113,6 +112,11 @@ public class ClearableEditText extends AppCompatEditText {
             mPasswordVisibleEnable = typedArray.getBoolean(R.styleable.ClearableEditText_cet_enable_password_visibility_toggle, false);
             mPasswordVisibleEnable = mPasswordVisibleEnable && isInputTypePassword();
             mContentClearableEnable = typedArray.getBoolean(R.styleable.ClearableEditText_cet_enable_content_clearable, true);
+
+        } finally {
+            if (typedArray != null) {
+                typedArray.recycle();
+            }
         }
     }
 
@@ -157,6 +161,10 @@ public class ClearableEditText extends AppCompatEditText {
 
     public void setOnShowPasswordListener(OnShowPasswordListener onShowPasswordListener) {
         mOnShowPasswordListener = onShowPasswordListener;
+    }
+
+    public void setOnClearTextListener(OnClearTextListener onClearTextListener) {
+        mOnClearTextListener = onClearTextListener;
     }
 
     private Bitmap getPasswordVisibleBitmap() {
@@ -235,6 +243,9 @@ public class ClearableEditText extends AppCompatEditText {
             if (upPosition == mDownPosition) {
                 if ((upPosition == DOWN_POSITION_CLEAR)) {
                     setText("");
+                    if (mOnClearTextListener != null) {
+                        mOnClearTextListener.onTextCleared(this);
+                    }
                 } else if (upPosition == DOWN_POSITION_PASSWORD) {
                     if (isPasswordInvisible()) {
                         if (mOnShowPasswordListener != null) {
