@@ -33,7 +33,7 @@ class ShapeableRecyclerView @JvmOverloads constructor(
     }
 
     override fun getShapeDrawable(): MaterialShapeDrawable {
-        return mdHelper.drawable
+        return mdHelper.shapeDrawable
     }
 
 }
